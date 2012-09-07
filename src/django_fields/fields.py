@@ -69,17 +69,18 @@ class BaseEncryptedField(models.Field):
         return value
 
     def get_db_prep_value(self, value, connection=None, prepared=False):
-		if value is None:
-			return None
-        
+        if value is None:
+            return None
+
         value = smart_str(value)
 
         if not self._is_encrypted(value):
             padding  = self._get_padding(value)
             if padding > 0:
-                value += "\0" + ''.join([random.choice(string.printable)
-                    for index in range(padding-1)])
+                value += "\0" + ''.join([random.choice(string.printable) for index in range(padding-1)])
+
             value = self.prefix + binascii.b2a_hex(self.cipher.encrypt(value))
+        
         return value
 
 
@@ -319,3 +320,4 @@ try:
     add_introspection_rules([], ["^django_fields\.fields\.PickleField"])
 except ImportError:
     pass
+
